@@ -1,0 +1,69 @@
+:root {
+  --paper: #fffaf5;
+  --ink: #302628;
+  --muted: #88787a;
+  --pink: #df6480;
+  --rose: #f3c9d2;
+  --line: rgba(67, 45, 49, 0.14);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+button { font: inherit; }
+.grain { position: fixed; inset: 0; pointer-events: none; opacity: .18; z-index: 10; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E"); }
+.site-header { width: min(1180px, calc(100% - 48px)); height: 86px; margin: auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid var(--line); position: relative; z-index: 2; }
+.wordmark { color: var(--pink); text-decoration: none; font: italic 700 30px Georgia, serif; }
+.site-header p { margin: 0; font: 11px Georgia, serif; letter-spacing: .22em; }
+.status { justify-self: end; font-size: 10px; letter-spacing: .15em; color: var(--muted); }
+.status i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #6fa37f; margin-right: 8px; box-shadow: 0 0 0 4px rgba(111,163,127,.12); }
+.hero { width: min(1180px, calc(100% - 48px)); min-height: 690px; margin: auto; display: grid; grid-template-columns: 1.15fr .85fr; gap: 100px; align-items: center; position: relative; }
+.orbit { position: absolute; border: 1px solid rgba(223,100,128,.18); border-radius: 50%; pointer-events: none; }
+.orbit-one { width: 520px; height: 520px; right: -240px; top: 35px; }
+.orbit-two { width: 380px; height: 380px; right: -170px; top: 105px; }
+.eyebrow, .section-number { color: var(--pink); font: 700 10px Georgia, serif; letter-spacing: .22em; }
+.hero h1 { margin: 18px 0 28px; font: 500 clamp(56px, 7vw, 92px)/.98 Georgia, "Songti SC", serif; letter-spacing: -.065em; }
+.hero h1 em { color: var(--pink); font-weight: 400; }
+.lead { max-width: 530px; color: var(--muted); font-size: 15px; line-height: 1.95; }
+.love-button { margin-top: 22px; min-width: 230px; border: 1px solid var(--ink); border-radius: 999px; color: var(--ink); background: transparent; padding: 15px 20px 15px 25px; display: inline-flex; align-items: center; justify-content: space-between; gap: 36px; cursor: pointer; transition: .25s ease; }
+.love-button b { color: var(--pink); font-size: 18px; }
+.love-button:hover { background: var(--ink); color: white; transform: translateY(-3px); }
+.note { min-height: 405px; padding: 34px 38px; background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.85); box-shadow: 0 28px 60px rgba(94,64,70,.13); transform: rotate(1.5deg); display: flex; flex-direction: column; position: relative; z-index: 1; }
+.note::before { content: ""; width: 88px; height: 24px; background: rgba(233,205,175,.55); position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
+.note-head { display: flex; justify-content: space-between; padding-bottom: 17px; border-bottom: 1px solid var(--line); color: var(--muted); font: 10px Georgia, serif; letter-spacing: .14em; }
+.tiny-heart { margin: 52px auto 25px; color: var(--pink); font-size: 46px; filter: drop-shadow(0 8px 9px rgba(223,100,128,.18)); }
+.note blockquote { margin: 0; text-align: center; font: 22px/1.75 Georgia, "Songti SC", serif; }
+.note > p { margin: auto 0 0; color: var(--muted); text-align: right; font: italic 12px Georgia, serif; }
+.foundation { padding: 120px max(24px, calc((100vw - 1180px)/2)); display: grid; grid-template-columns: .55fr 1.45fr; gap: 70px; background: #342a2c; color: #fff9f4; }
+.foundation h2 { margin: 0; font: 400 clamp(38px, 5vw, 62px)/1.25 Georgia, "Songti SC", serif; letter-spacing: -.04em; }
+.foundation div > p { max-width: 580px; color: #c7b9bb; line-height: 1.9; margin: 30px 0 0; }
+.coming { width: min(1180px, calc(100% - 48px)); margin: auto; padding: 110px 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.coming article { min-height: 260px; padding: 32px; border-left: 1px solid var(--line); }
+.coming article:last-child { border-right: 1px solid var(--line); }
+.coming span { color: var(--pink); font: 11px Georgia, serif; }
+.coming h3 { margin: 80px 0 15px; font: 400 25px Georgia, "Songti SC", serif; }
+.coming p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+footer { width: min(1180px, calc(100% - 48px)); min-height: 110px; margin: auto; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 7px; color: var(--muted); font: italic 12px Georgia, serif; }
+footer strong { color: var(--pink); } footer span:last-child { margin-left: auto; }
+.heart-rain { position: fixed; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.heart-rain i { position: absolute; left: var(--x); bottom: -30px; color: var(--pink); font-style: normal; animation: rise 1.8s ease-out var(--delay) both; }
+@keyframes rise { 0% { transform: translateY(0) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-105vh) rotate(35deg); opacity: 0; } }
+
+@media (max-width: 800px) {
+  .site-header { grid-template-columns: 1fr 1fr; }.site-header p { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 60px; padding: 80px 0 100px; }
+  .note { max-width: 560px; width: 100%; justify-self: center; }
+  .foundation { grid-template-columns: 1fr; gap: 25px; }
+  .coming { grid-template-columns: 1fr; }
+  .coming article, .coming article:last-child { border: 0; border-top: 1px solid var(--line); min-height: 210px; }
+  .coming article:last-child { border-bottom: 1px solid var(--line); }
+  .coming h3 { margin-top: 55px; }
+}
+@media (max-width: 520px) {
+  .site-header, .hero, .coming, footer { width: calc(100% - 28px); }
+  .hero h1 { font-size: 52px; }
+  .note { padding: 28px 24px; min-height: 390px; }
+  .note blockquote { font-size: 19px; }
+  .foundation { padding-top: 85px; padding-bottom: 85px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

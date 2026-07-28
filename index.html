@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fffaf5" />
+    <meta name="description" content="一个为 Karina 慢慢搭建的小网站。" />
+    <title>For Karina</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="回到首页">K.</a>
+      <p>FOR KARINA, WITH LOVE</p>
+      <span class="status"><i></i> OUR PLACE</span>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="orbit orbit-one" aria-hidden="true"></div>
+        <div class="orbit orbit-two" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p class="eyebrow">A LITTLE PLACE ON THE INTERNET</p>
+          <h1>给 <em>Karina</em><br />的一方小天地</h1>
+          <p class="lead">
+            这里不是临时的一页。它会和我们的故事一起，慢慢长出照片、纪念日、想说的话，以及每一个值得收藏的瞬间。
+          </p>
+          <button class="love-button" id="loveButton" type="button">
+            <span>点亮今天的心</span>
+            <b aria-hidden="true">♥</b>
+          </button>
+        </div>
+
+        <aside class="note" aria-label="给 Karina 的留言">
+          <div class="note-head"><span>NO. 001</span><span id="today"></span></div>
+          <div class="tiny-heart" aria-hidden="true">♥</div>
+          <blockquote>“我们的故事不需要一次写完。<br />我想陪你，一页一页慢慢更新。”</blockquote>
+          <p>— 永远站在你这边的人</p>
+        </aside>
+      </section>
+
+      <section class="foundation">
+        <p class="section-number">01 / THE BEGINNING</p>
+        <div>
+          <h2>今天，先把这里<br />变成我们的首页。</h2>
+          <p>下一次更新，可以从你最想留下的东西开始。每一次新增，都会成为这个网站里真实的一部分。</p>
+        </div>
+      </section>
+
+      <section class="coming" aria-label="后续计划">
+        <article><span>01</span><h3>我们的照片</h3><p>把喜欢的瞬间，整理成只属于我们的相册。</p></article>
+        <article><span>02</span><h3>重要的日子</h3><p>纪念日、生日和每一个值得期待的倒数。</p></article>
+        <article><span>03</span><h3>想对你说</h3><p>那些当面害羞的话，可以认真写在这里。</p></article>
+      </section>
+    </main>
+
+    <footer><span>Made patiently for</span><strong>Karina</strong><span>© <b id="year"></b></span></footer>
+    <div class="heart-rain" id="heartRain" aria-hidden="true"></div>
+    <script src="./script.js"></script>
+  </body>
+</html>
