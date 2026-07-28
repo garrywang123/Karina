@@ -3,59 +3,131 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fffaf5" />
-    <meta name="description" content="一个为 Karina 慢慢搭建的小网站。" />
-    <title>For Karina</title>
+    <meta name="theme-color" content="#ffeff4" />
+    <meta name="description" content="Karina 的甜甜小世界，收藏爱与每一个可爱瞬间。" />
+    <title>Karina's Kawaii Corner</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="grain" aria-hidden="true"></div>
+    <div class="page-dots" aria-hidden="true"></div>
     <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="回到首页">K.</a>
-      <p>FOR KARINA, WITH LOVE</p>
-      <span class="status"><i></i> OUR PLACE</span>
+      <a class="wordmark" href="#top" aria-label="回到首页">
+        <span class="mini-bow" aria-hidden="true">୨୧</span>
+        Karina's corner
+      </a>
+      <nav aria-label="页面导航">
+        <a href="#hello">Hello</a>
+        <a href="#coming">Coming soon</a>
+      </nav>
+      <span class="status"><i></i> SWEET & ONLINE</span>
     </header>
 
     <main id="top">
-      <section class="hero">
-        <div class="orbit orbit-one" aria-hidden="true"></div>
-        <div class="orbit orbit-two" aria-hidden="true"></div>
+      <section class="hero" id="hello">
+        <div class="sticker sticker-heart" aria-hidden="true">♥</div>
+        <div class="sticker sticker-star" aria-hidden="true">✦</div>
         <div class="hero-copy">
-          <p class="eyebrow">A LITTLE PLACE ON THE INTERNET</p>
-          <h1>给 <em>Karina</em><br />的一方小天地</h1>
+          <div class="postmark"><span>FOR MY FAVORITE GIRL</span><b>♥</b></div>
+          <p class="eyebrow">WELCOME TO YOUR LITTLE WORLD</p>
+          <h1>Hello,<br /><em>Karina!</em></h1>
           <p class="lead">
-            这里不是临时的一页。它会和我们的故事一起，慢慢长出照片、纪念日、想说的话，以及每一个值得收藏的瞬间。
+            这里装着粉红色的心情、想对你说的话，和以后每一个值得收藏的可爱瞬间。
           </p>
           <button class="love-button" id="loveButton" type="button">
-            <span>点亮今天的心</span>
+            <span>领取今日份可爱</span>
             <b aria-hidden="true">♥</b>
           </button>
+          <p class="micro-copy">100% made with love · 永远为 Karina 更新</p>
         </div>
 
-        <aside class="note" aria-label="给 Karina 的留言">
-          <div class="note-head"><span>NO. 001</span><span id="today"></span></div>
-          <div class="tiny-heart" aria-hidden="true">♥</div>
-          <blockquote>“我们的故事不需要一次写完。<br />我想陪你，一页一页慢慢更新。”</blockquote>
-          <p>— 永远站在你这边的人</p>
+        <aside class="kawaii-window" aria-label="给 Karina 的欢迎卡片">
+          <div class="window-bar">
+            <span>KARINA_LOVE.exe</span>
+            <div aria-hidden="true"><i></i><i></i><i></i></div>
+          </div>
+          <div class="window-body">
+            <span class="kitty-label">CLASSIC RED BOW</span>
+            <img
+              class="kitty-classic"
+              src="./assets/hello-kitty-classic.png"
+              alt="戴红色蝴蝶结、抱着爱心的经典 Hello Kitty"
+            />
+            <p class="bubble">You make my world<br /><strong>extra cute!</strong></p>
+            <div class="window-footer"><span id="today"></span><span>♡ ALWAYS</span></div>
+          </div>
         </aside>
       </section>
 
-      <section class="foundation">
-        <p class="section-number">01 / THE BEGINNING</p>
-        <div>
-          <h2>今天，先把这里<br />变成我们的首页。</h2>
-          <p>下一次更新，可以从你最想留下的东西开始。每一次新增，都会成为这个网站里真实的一部分。</p>
+      <div class="ticker" aria-hidden="true">
+        <div>♡ KARINA ♡ LOVE YOU ♡ KAWAII DAYS ♡ KARINA ♡ LOVE YOU ♡ KAWAII DAYS ♡</div>
+      </div>
+
+      <section class="kitty-era" aria-label="Hello Kitty 粉色千禧风造型">
+        <div class="kitty-era-copy">
+          <p class="section-tag">KARINA'S STYLE PICK / 2000s</p>
+          <h2>粉色格纹，<br />甜甜的 Y2K 心情。</h2>
+          <p>把翻盖手机、爱心挂件和粉白格纹放进 Karina 的小世界里。经典的可爱，也可以有今天最喜欢的样子。</p>
+          <div class="style-pills" aria-label="风格关键词">
+            <span>PINK GINGHAM</span><span>FLIP PHONE</span><span>LOVE CORE</span>
+          </div>
         </div>
+        <figure class="kitty-y2k-card">
+          <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
+          <span class="sparkle sparkle-two" aria-hidden="true">♥</span>
+          <img src="./assets/hello-kitty-y2k.png" alt="穿粉色格纹裙、拿着爱心翻盖手机的 Hello Kitty" />
+          <figcaption>HELLO, KARINA! ♡</figcaption>
+        </figure>
       </section>
 
-      <section class="coming" aria-label="后续计划">
-        <article><span>01</span><h3>我们的照片</h3><p>把喜欢的瞬间，整理成只属于我们的相册。</p></article>
-        <article><span>02</span><h3>重要的日子</h3><p>纪念日、生日和每一个值得期待的倒数。</p></article>
-        <article><span>03</span><h3>想对你说</h3><p>那些当面害羞的话，可以认真写在这里。</p></article>
+      <section class="love-letter">
+        <div class="letter-stamp" aria-hidden="true">K<br /><span>♥</span></div>
+        <figure class="dog-bear-mascot">
+          <img src="./assets/dog-bear.png" alt="戴着红色爱心围巾、憨憨坐着的棕色小狗熊" />
+          <figcaption><span>♥</span> Karina 的专属小狗熊</figcaption>
+        </figure>
+        <div>
+          <p class="section-tag">LOVE LETTER / 001</p>
+          <h2>我们的网站，<br />也要像你一样可爱。</h2>
+          <p>今天先换上你喜欢的风格，小狗熊也会一直守在这里。以后，我们再把照片、纪念日、想说的话，一件一件放进来。</p>
+        </div>
+        <div class="tape" aria-hidden="true"></div>
+      </section>
+
+      <section class="coming" id="coming" aria-label="后续计划">
+        <div class="section-heading">
+          <p class="eyebrow">NEXT LITTLE SURPRISES</p>
+          <h2>接下来，想和你一起收藏...</h2>
+        </div>
+        <div class="card-grid">
+          <article class="feature-card card-pink">
+            <span class="card-icon" aria-hidden="true">▣</span>
+            <p>01 / PHOTO BOX</p>
+            <h3>我们的照片</h3>
+            <small>把喜欢的瞬间装进粉色相册</small>
+            <i class="card-bow" aria-hidden="true">୨୧</i>
+          </article>
+          <article class="feature-card card-white">
+            <span class="card-icon" aria-hidden="true">♥</span>
+            <p>02 / SPECIAL DAYS</p>
+            <h3>重要的日子</h3>
+            <small>纪念日和每一个甜甜的倒数</small>
+            <i class="card-bow" aria-hidden="true">୨୧</i>
+          </article>
+          <article class="feature-card card-red">
+            <span class="card-icon" aria-hidden="true">✉</span>
+            <p>03 / LITTLE NOTES</p>
+            <h3>想对你说</h3>
+            <small>认真写下当面会害羞的话</small>
+            <i class="card-bow" aria-hidden="true">୨୧</i>
+          </article>
+        </div>
       </section>
     </main>
 
-    <footer><span>Made patiently for</span><strong>Karina</strong><span>© <b id="year"></b></span></footer>
+    <footer>
+      <span>Handmade with</span><b>♥</b><strong>for Karina</strong>
+      <span class="footer-year">© <i id="year"></i></span>
+    </footer>
     <div class="heart-rain" id="heartRain" aria-hidden="true"></div>
     <script src="./script.js"></script>
   </body>
