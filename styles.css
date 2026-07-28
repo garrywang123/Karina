@@ -16,6 +16,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--cream); color: var(--ink); font-family: "Arial Rounded MT Bold", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; overflow-x: hidden; }
+img { display: block; max-width: 100%; }
 button, a { font: inherit; -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
 .page-dots { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-color: var(--cream); background-image: radial-gradient(rgba(226, 74, 105, .15) 1.5px, transparent 1.5px); background-size: 22px 22px; }
@@ -30,9 +31,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
 .status { justify-self: end; color: var(--muted); font-size: 9px; letter-spacing: .14em; }
 .status i { display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #70b588; box-shadow: 0 0 0 4px rgba(112,181,136,.15); }
 
-.hero { width: min(1160px, calc(100% - 40px)); min-height: 700px; margin: auto; padding: 80px 0 90px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 90px; align-items: center; position: relative; }
+.hero { width: min(1160px, calc(100% - 40px)); min-height: 700px; margin: auto; padding: 80px 0 90px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr); gap: clamp(45px, 6vw, 90px); align-items: center; position: relative; }
 .hero::before { content: ""; position: absolute; width: 250px; height: 250px; left: -170px; bottom: 40px; border: 22px solid rgba(244,169,189,.22); border-radius: 50%; }
-.hero-copy { position: relative; z-index: 2; }
+.hero-copy { min-width: 0; position: relative; z-index: 2; }
 .postmark { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 20px; padding: 8px 13px; border: 2px solid var(--red); border-radius: 4px; color: var(--deep-red); background: white; transform: rotate(-2deg); font-size: 9px; letter-spacing: .14em; box-shadow: 3px 3px 0 var(--pink); }
 .postmark b { color: var(--red); font-size: 15px; }
 .eyebrow, .section-tag { margin: 0; color: var(--red); font-size: 10px; font-weight: 900; letter-spacing: .18em; }
@@ -44,7 +45,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
 .love-button:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 6px 8px 0 var(--pink); }
 .micro-copy { margin: 14px 0 0 15px; color: #b7939d; font: italic 11px Georgia, serif; }
 
-.kawaii-window { border: 3px solid var(--deep-red); border-radius: 18px; background: white; box-shadow: 10px 12px 0 var(--pink), 14px 17px 0 rgba(169,31,59,.14); transform: rotate(1.2deg); position: relative; z-index: 2; overflow: hidden; }
+.kawaii-window { width: 100%; max-width: 520px; min-width: 0; justify-self: end; border: 3px solid var(--deep-red); border-radius: 18px; background: white; box-shadow: 10px 12px 0 var(--pink), 14px 17px 0 rgba(169,31,59,.14); transform: rotate(1.2deg); position: relative; z-index: 2; overflow: hidden; }
 .window-bar { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; background: var(--red); color: white; font: 800 10px monospace; letter-spacing: .08em; }
 .window-bar > div { display: flex; gap: 7px; }
 .window-bar i { display: block; width: 10px; height: 10px; border: 1px solid white; border-radius: 50%; background: var(--pink); }
@@ -62,9 +63,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
 .ticker div { width: max-content; padding: 13px 0; font-size: 12px; letter-spacing: .22em; animation: scroll 22s linear infinite; }
 @keyframes scroll { to { transform: translateX(-50%); } }
 
-.kitty-era { width: min(1060px, calc(100% - 40px)); margin: 115px auto 30px; padding: 55px 70px; display: grid; grid-template-columns: 1fr .8fr; gap: 55px; align-items: center; border: 3px solid var(--deep-red); border-radius: 28px; background: linear-gradient(135deg, #fff 0 47%, #ffe4ed 47% 100%); box-shadow: 10px 12px 0 var(--pink); position: relative; overflow: hidden; }
+.kitty-era { width: min(1060px, calc(100% - 40px)); margin: 115px auto 30px; padding: 55px 70px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .8fr); gap: 55px; align-items: center; border: 3px solid var(--deep-red); border-radius: 28px; background: linear-gradient(135deg, #fff 0 47%, #ffe4ed 47% 100%); box-shadow: 10px 12px 0 var(--pink); position: relative; overflow: hidden; }
 .kitty-era::before { content: ""; position: absolute; inset: 12px; border: 2px dashed rgba(217,54,84,.25); border-radius: 19px; pointer-events: none; }
-.kitty-era-copy { position: relative; z-index: 2; }
+.kitty-era-copy { min-width: 0; position: relative; z-index: 2; }
 .kitty-era h2 { margin: 16px 0 20px; color: var(--deep-red); font: 500 clamp(40px, 5vw, 62px)/1.12 Georgia, "Songti SC", serif; letter-spacing: -.055em; }
 .kitty-era-copy > p:last-of-type { max-width: 540px; color: var(--muted); font-size: 14px; line-height: 1.9; }
 .style-pills { margin-top: 25px; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -76,7 +77,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
 .sparkle-one { width: 52px; height: 52px; right: 15px; top: 16px; font-size: 23px; transform: rotate(12deg); }
 .sparkle-two { width: 40px; height: 40px; left: 16px; top: 25%; color: var(--red); background: var(--yellow); transform: rotate(-10deg); }
 
-.love-letter { margin: 115px auto; width: min(1000px, calc(100% - 40px)); min-height: 440px; padding: 60px 65px; display: grid; grid-template-columns: .72fr 1.28fr; gap: 55px; align-items: center; border: 2px solid var(--red); background: white; box-shadow: 9px 10px 0 var(--pink); position: relative; transform: rotate(-.5deg); }
+.love-letter { margin: 115px auto; width: min(1000px, calc(100% - 40px)); min-height: 440px; padding: 60px 65px; display: grid; grid-template-columns: minmax(230px, .72fr) minmax(0, 1.28fr); gap: 55px; align-items: center; border: 2px solid var(--red); background: white; box-shadow: 9px 10px 0 var(--pink); position: relative; transform: rotate(-.5deg); }
 .love-letter::before { content: ""; position: absolute; inset: 12px; border: 2px dashed rgba(217,54,84,.28); pointer-events: none; }
 .section-tag { align-self: start; }
 .love-letter h2 { margin: 14px 0 0; font: 500 clamp(38px, 5vw, 58px)/1.18 Georgia, "Songti SC", serif; color: var(--deep-red); letter-spacing: -.05em; }
@@ -93,6 +94,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
 .section-heading { max-width: 740px; margin: 0 auto 50px; text-align: center; }
 .section-heading h2 { margin: 15px 0 0; color: var(--deep-red); font: 500 clamp(34px, 4.5vw, 53px)/1.25 Georgia, "Songti SC", serif; }
 .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.card-grid > * { min-width: 0; }
 .feature-card { min-height: 330px; padding: 30px; border: 3px solid var(--deep-red); border-radius: 18px; box-shadow: var(--shadow); position: relative; overflow: hidden; transition: .22s ease; }
 .feature-card:hover { transform: translateY(-7px) rotate(-1deg); box-shadow: 8px 11px 0 rgba(191,48,76,.2); }
 .card-pink { background: var(--pink); }.card-white { background: white; }.card-red { background: var(--red); color: white; }
@@ -109,13 +111,22 @@ footer > b, footer strong { color: var(--red); }.footer-year { margin-left: auto
 .heart-rain i { position: absolute; left: var(--x); bottom: -35px; color: var(--red); font-style: normal; animation: rise 1.8s ease-out var(--delay) both; filter: drop-shadow(2px 2px 0 white); }
 @keyframes rise { 0% { transform: translateY(0) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-105vh) rotate(35deg); opacity: 0; } }
 
+@media (max-width: 1320px) {
+  .hero { grid-template-columns: 1fr; gap: 65px; padding-top: 70px; }
+  .hero-copy { max-width: 720px; }
+  .kawaii-window { width: min(560px, 100%); max-width: none; justify-self: center; }
+  .sticker-heart { right: 17%; top: 49%; }
+  .sticker-star { right: 7%; bottom: 55px; }
+  .kitty-era { grid-template-columns: 1fr; max-width: 760px; }
+  .kitty-y2k-card { width: min(430px, 100%); justify-self: center; }
+}
+
 @media (max-width: 850px) {
   .site-header { grid-template-columns: 1fr 1fr; }.site-header nav { display: none; }
-  .hero { grid-template-columns: 1fr; gap: 75px; padding-top: 70px; }
-  .kawaii-window { width: min(520px, 100%); justify-self: center; }
+  .hero { gap: 75px; }
+  .kawaii-window { width: min(520px, 100%); }
   .sticker-heart { right: 20px; top: 53%; }.sticker-star { right: 3px; bottom: 55px; }
-  .kitty-era { grid-template-columns: 1fr; padding: 60px 45px; }
-  .kitty-y2k-card { width: min(430px, 100%); justify-self: center; }
+  .kitty-era { padding: 60px 45px; }
   .love-letter { grid-template-columns: 1fr; gap: 30px; padding: 65px 45px; }
   .dog-bear-mascot img { width: 220px; }
   .card-grid { grid-template-columns: 1fr; max-width: 600px; margin: auto; }
