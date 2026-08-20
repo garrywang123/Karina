@@ -52,6 +52,8 @@ if (journeyMap && window.L) {
     opacity: 0.85,
     dashArray: "8 10",
   }).addTo(routeMap);
+
+  journeyMap.querySelector(".map-loading")?.remove();
 }
 
 if (mapFullscreen && journeyMapFrame) {
