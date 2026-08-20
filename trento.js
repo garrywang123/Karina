@@ -26,7 +26,7 @@ if (journeyMap && window.L) {
     { name: "维罗纳", stage: "9 月 6 日 · 抵达", coordinates: [45.4384, 10.9916], label: "03" },
     { name: "特伦托", stage: "9 月 7 日 · 火车抵达", coordinates: [46.0748, 11.1217], label: "04" },
   ];
-  routeMap = window.L.map(journeyMap, { scrollWheelZoom: false, worldCopyJump: true }).setView([48, 52], 3);
+  routeMap = window.L.map(journeyMap, { scrollWheelZoom: true, worldCopyJump: true }).setView([48, 52], 3);
 
   window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
@@ -58,8 +58,10 @@ if (journeyMap && window.L) {
 }
 
 if (mapFullscreen && journeyMapFrame) {
+  const journeyMapWrap = journeyMapFrame.closest(".journey-map-wrap");
   const setMapExpanded = (isExpanded) => {
     journeyMapFrame.classList.toggle("is-expanded", isExpanded);
+    journeyMapWrap?.classList.toggle("is-map-expanded", isExpanded);
     document.body.classList.toggle("map-expanded", isExpanded);
     mapFullscreen.textContent = isExpanded ? "收起地图" : "展开地图";
     if (routeMap) window.setTimeout(() => routeMap.invalidateSize(), 120);
