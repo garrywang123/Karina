@@ -16,6 +16,7 @@ if (daysUntilDeparture > 0) {
 const journeyMap = document.querySelector("#journeyMap");
 const journeyMapFrame = document.querySelector("#journeyMapFrame");
 const mapFullscreen = document.querySelector("#mapFullscreen");
+const mapClose = document.querySelector("#mapClose");
 let routeMap;
 
 if (journeyMap && window.L) {
@@ -57,22 +58,17 @@ if (journeyMap && window.L) {
 }
 
 if (mapFullscreen && journeyMapFrame) {
-  mapFullscreen.addEventListener("click", async () => {
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else {
-        await journeyMapFrame.requestFullscreen();
-      }
-    } catch {
-      mapFullscreen.textContent = "全屏暂不可用";
-    }
-  });
-
-  document.addEventListener("fullscreenchange", () => {
-    const isFullscreen = document.fullscreenElement === journeyMapFrame;
-    mapFullscreen.textContent = isFullscreen ? "退出全屏" : "全屏查看";
+  const setMapExpanded = (isExpanded) => {
+    journeyMapFrame.classList.toggle("is-expanded", isExpanded);
+    document.body.classList.toggle("map-expanded", isExpanded);
+    mapFullscreen.textContent = isExpanded ? "收起地图" : "展开地图";
     if (routeMap) window.setTimeout(() => routeMap.invalidateSize(), 120);
+  };
+
+  mapFullscreen.addEventListener("click", () => setMapExpanded(!journeyMapFrame.classList.contains("is-expanded")));
+  mapClose?.addEventListener("click", () => setMapExpanded(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && journeyMapFrame.classList.contains("is-expanded")) setMapExpanded(false);
   });
 }
 
