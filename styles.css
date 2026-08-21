@@ -261,4 +261,8 @@ footer > b, footer strong { color: var(--red); }.footer-year { margin-left: auto
   .trento-page .place-detail-panel, .trento-page .journey-map-wrap.is-map-expanded .place-detail-panel { top: auto; right: 8px; bottom: 8px; left: 8px; width: auto; max-height: min(68%, 430px); overflow: auto; border-radius: 14px; }.trento-page .place-detail-photo { height: 132px; }.trento-page .place-detail-body { padding: 12px; }.trento-page .place-detail-body h3 { font-size: 16px; }
   .trento-page .map-navigation-fields .route-input-wrap:last-child { grid-column: 1 / -1; }.trento-page .journey-map-wrap.is-map-expanded .map-navigation { top: max(126px, calc(env(safe-area-inset-top) + 112px)); width: calc(100vw - 28px); }
 }
+.trento-page .route-steps[hidden] { display: none; }
+.trento-page .journey-map-wrap.is-map-expanded .map-navigation { top: max(14px, env(safe-area-inset-top)); }
+.trento-page .journey-map-wrap.is-map-expanded .place-detail-panel { top: 156px; }
+@media (max-width: 760px) { .trento-page .journey-map-wrap.is-map-expanded .place-detail-panel { top: auto; right: 8px; bottom: 8px; left: 8px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }

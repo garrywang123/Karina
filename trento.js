@@ -18,7 +18,6 @@ const journeyMapFrame = document.querySelector("#journeyMapFrame");
 const mapFullscreen = document.querySelector("#mapFullscreen");
 const mapClose = document.querySelector("#mapClose");
 const mapStatus = document.querySelector("#mapStatus");
-const mapFilterButtons = document.querySelectorAll("[data-map-filter]");
 let routeMap;
 let googleMapCenter;
 let currentLocation;
@@ -188,7 +187,7 @@ const openMapPlacePanel = (place) => {
 };
 
 window.gm_authFailure = () => {
-  if (mapStatus) mapStatus.textContent = "Google 地图无法验证 · 请检查 API key 的网站限制";
+  setNavigationStatus("Google 地图无法验证 · 请检查 API key 的网站限制");
 };
 
 window.initGoogleMap = () => {
@@ -204,99 +203,11 @@ window.initGoogleMap = () => {
     gestureHandling: "greedy",
     clickableIcons: true,
   });
-  const mapGroups = { food: [], transit: [], saved: [] };
-  const markerColors = { food: "#8d463f", transit: "#809da3", saved: "#3d4542" };
-  const addPlace = (place) => {
-    const marker = new window.google.maps.Marker({
-      position: { lat: place.lat, lng: place.lng },
-      map: routeMap,
-      title: place.name,
-      label: { text: place.label, color: "#ffffff", fontWeight: "700", fontSize: "11px" },
-      icon: {
-        path: window.google.maps.SymbolPath.CIRCLE,
-        fillColor: markerColors[place.type],
-        fillOpacity: 1,
-        strokeColor: "#ffffff",
-        strokeWeight: 2,
-        scale: 15,
-      },
-    });
-    marker.addListener("click", () => openMapPlacePanel(place));
-    mapGroups[place.type].push(marker);
-  };
-
-  addPlace({
-    type: "saved", label: "站", category: "已保存地点", name: "Trento Stazione FS", detail: "9 月 8 日火车抵达站；站前可换乘市内公交。", lat: 46.0727, lng: 11.1187,
-  });
-  // These verified public reference points stay visible even when a network blocks live POI loading.
-  [
-    { type: "food", label: "咖", category: "咖啡店", name: "Bottega del Caffè Dersut", detail: "Via Rodolfo Belenzani 33 · 市中心咖啡与早餐。", lat: 46.068446, lng: 11.121491 },
-    { type: "transit", label: "公", category: "公交换乘", name: "Piazza Dante / Stazione FS", detail: "Trento 火车站前广场；市内公交换乘位置。", lat: 46.0731, lng: 11.1182 },
-  ].forEach(addPlace);
-  const setMapFilter = (filter) => {
-    Object.entries(mapGroups).forEach(([type, markers]) => {
-      const shouldShow = filter === "all" || filter === type;
-      markers.forEach((marker) => marker.setMap(shouldShow ? routeMap : null));
-    });
-    mapFilterButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mapFilter === filter));
-  };
-  const mapBoundsQuery = "46.050,11.085,46.095,11.160";
-  const overpassQuery = `[out:json][timeout:20];(node["amenity"~"^(restaurant|cafe|fast_food)$"]["name"](${mapBoundsQuery});node["highway"="bus_stop"](${mapBoundsQuery}););out body;`;
-  const placeSources = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
-  const fetchPlaceData = async () => {
-    for (const source of placeSources) {
-      const controller = new AbortController();
-      const timer = window.setTimeout(() => controller.abort(), 9000);
-      try {
-        const response = await fetch(`${source}?data=${encodeURIComponent(overpassQuery)}`, { signal: controller.signal });
-        if (!response.ok) throw new Error("Place data unavailable");
-        return await response.json();
-      } catch {
-        // Some networks block one public Overpass endpoint but not another.
-      } finally {
-        window.clearTimeout(timer);
-      }
-    }
-    throw new Error("All place sources unavailable");
-  };
-  const loadNearbyPlaces = async () => {
-    try {
-      const data = await fetchPlaceData();
-      const limits = { food: 24, transit: 30 };
-      const counts = { food: 0, transit: 0 };
-      data.elements.forEach((element) => {
-        const isTransit = element.tags?.highway === "bus_stop";
-        const type = isTransit ? "transit" : "food";
-        if (counts[type] >= limits[type]) return;
-        if (!element.lat || !element.lon) return;
-        counts[type] += 1;
-        const amenity = element.tags?.amenity;
-        const category = isTransit ? "公交站" : amenity === "cafe" ? "咖啡店" : amenity === "fast_food" ? "简餐" : "餐厅";
-        addPlace({
-          type, label: isTransit ? "公" : amenity === "cafe" ? "咖" : "食", category,
-          name: element.tags?.name || "未命名站点", detail: element.tags?.["addr:street"] || (isTransit ? "点开后可在地图中查看位置与路线。" : "点开后可在地图中查看位置与导航。"),
-          lat: element.lat, lng: element.lon,
-        });
-      });
-      if (mapStatus) mapStatus.textContent = `已加载 ${counts.food} 个餐饮地点和 ${counts.transit} 个公交站`;
-    } catch {
-      if (mapStatus) mapStatus.textContent = "周边地点暂未加载 · 点击筛选按钮可重试";
-    }
-  };
-  mapFilterButtons.forEach((button) => button.addEventListener("click", () => {
-    setMapFilter(button.dataset.mapFilter);
-    if (mapStatus?.textContent.includes("暂未加载")) {
-      mapStatus.textContent = "正在重新加载周边地点…";
-      loadNearbyPlaces();
-    }
-  }));
-  loadNearbyPlaces();
-
   routeMap.addListener("click", async (event) => {
     if (!event.placeId) return;
+    event.stop?.();
     try {
       const place = await resolveGooglePlaceDetails(event.placeId);
-      event.stop();
       showPlacePanel(place);
     } catch {
       setNavigationStatus("该地点资料暂时无法读取；仍可使用 Google 原始地点卡片，或在搜索框中查找。 ");
