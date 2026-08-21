@@ -6,8 +6,7 @@
     <meta name="theme-color" content="#ffeff4" />
     <meta name="description" content="Karina 的特伦托大学交换生活记录：行程、地图、衣食住行与交换日记。" />
     <title>Karina in Trento</title>
-    <link rel="stylesheet" href="./styles.css?v=20260820-style2" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="./styles.css?v=20260821-navigation15" />
   </head>
   <body class="trento-page">
     <div class="page-dots" aria-hidden="true"></div>
@@ -16,6 +15,7 @@
       <nav aria-label="特伦托页面导航">
         <a href="./index.html">Home</a>
         <a href="#journey">Journey</a>
+        <a href="./trento-map.html">Map</a>
         <a href="#life">Life</a>
       </nav>
       <span class="status"><i></i> EXCHANGE 2026</span>
@@ -74,12 +74,6 @@
           <p class="itinerary-disclaimer">航班时刻、航站楼和执飞机型可能变动；页面内容用于行程整理，出行前请以芬兰航空订单和机场当天信息为准。</p>
         </section>
 
-        <section class="journey-map-wrap" aria-labelledby="map-title">
-          <div class="map-heading"><p class="section-tag" id="map-title">ROUTE MAP / 4 STOPS</p><div><p>可拖动、缩放；点击站点查看路线节点。</p><button id="mapFullscreen" class="map-fullscreen" type="button">全屏查看</button></div></div>
-          <div id="journeyMapFrame" class="journey-map-frame"><button id="mapClose" class="map-close" type="button" aria-label="收起地图">× 收起地图</button><div id="journeyMap" class="journey-map" role="application" aria-label="从上海经赫尔辛基和维罗纳到特伦托的路线地图"><p class="map-loading">地图正在准备中…</p></div></div>
-          <div class="map-legend" aria-label="路线站点"><span><i class="dot shanghai"></i>上海出发</span><span><i class="dot helsinki"></i>赫尔辛基转机</span><span><i class="dot verona"></i>维罗纳抵达</span><span><i class="dot trento"></i>特伦托交换</span></div>
-        </section>
-
         <section class="trento-guide" id="life" aria-labelledby="life-title">
           <div class="guide-copy"><p class="section-tag">LIVING INFORMATION</p><h2 id="life-title">食住行</h2><p>超市和餐厅、住处附近信息、交通卡和路线确认后，补充到对应分类。</p></div>
           <div class="guide-grid">
@@ -107,7 +101,7 @@
     </main>
 
     <footer><span>Trento Exchange</span><b>·</b><strong>2026</strong><a href="./index.html">返回首页</a></footer>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="./trento.js?v=20260820-mapfix"></script>
+    <script src="./trento.js?v=20260821-navigation15"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFeKxaBmwfhiGCHUHkqSWLMqmuQSr-R1U&libraries=places,geometry&language=zh-CN&region=IT&v=weekly&callback=initGoogleMap"></script>
   </body>
 </html>
