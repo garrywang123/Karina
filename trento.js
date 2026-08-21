@@ -22,12 +22,14 @@ let routeMap;
 let googleMapCenter;
 let currentLocation;
 let currentLocationMarker;
-let currentRouteLine;
+let currentRouteLines = [];
 let routeStepMarkers = [];
 let routeAlternativeLines = [];
+let routeSummaryLabels = [];
 let currentRouteOptions = [];
 let currentRouteContext;
 let selectedRouteIndex = 0;
+let routeDetailsOpen = false;
 let selectedRouteOrigin;
 let selectedRouteDestination;
 const GOOGLE_MAPS_API_KEY = "AIzaSyAFeKxaBmwfhiGCHUHkqSWLMqmuQSr-R1U";
@@ -246,10 +248,43 @@ const clearRouteStepMarkers = () => {
 };
 
 const clearRouteLines = () => {
-  currentRouteLine?.setMap(null);
-  currentRouteLine = null;
+  currentRouteLines.forEach((line) => line.setMap(null));
+  currentRouteLines = [];
   routeAlternativeLines.forEach((line) => line.setMap(null));
   routeAlternativeLines = [];
+  routeSummaryLabels.forEach((label) => label.setMap(null));
+  routeSummaryLabels = [];
+};
+
+const addRouteMapLabel = (position, route, segments) => {
+  if (!routeMap || !window.google?.maps?.OverlayView || !position) return;
+  class RouteMapLabel extends window.google.maps.OverlayView {
+    constructor() {
+      super();
+      this.position = position;
+      this.element = document.createElement("div");
+      this.element.className = "route-map-label";
+      const transport = segments.find((segment) => segment.type === "transit") || segments[0];
+      const summary = transport ? `${transport.label} · ${transport.detail}` : "路线信息待确认";
+      this.element.innerHTML = `<b>${escapeHtml(formatRouteDuration(route.duration))}</b><span>${escapeHtml(formatRouteDistance(route.distanceMeters))} · ${escapeHtml(summary)}</span>`;
+      this.setMap(routeMap);
+    }
+
+    onAdd() {
+      this.getPanes()?.floatPane.append(this.element);
+    }
+
+    draw() {
+      const point = this.getProjection()?.fromLatLngToDivPixel(this.position);
+      if (point) this.element.style.transform = `translate(${Math.round(point.x)}px, ${Math.round(point.y)}px) translate(-50%, -115%)`;
+    }
+
+    onRemove() {
+      this.element.remove();
+    }
+  }
+  const label = new RouteMapLabel();
+  routeSummaryLabels.push(label);
 };
 
 const addRouteStepMarker = (position, label, title, color) => {
@@ -265,53 +300,24 @@ const addRouteStepMarker = (position, label, title, color) => {
   }));
 };
 
-const renderRouteSteps = (route, origin, destination) => {
-  if (!routeSteps) return;
-  routeSteps.replaceChildren();
-  const steps = route.legs?.flatMap((leg) => leg.steps || []) || [];
-  steps.forEach((step, index) => {
-    const item = document.createElement("li");
-    const transit = step.transitDetails;
-    const instruction = step.navigationInstruction?.instructions || "按路线前进";
-    if (transit) {
-      const line = localizedText(transit.transitLine?.nameShort) || localizedText(transit.transitLine?.name) || "公共交通";
-      const vehicle = localizedText(transit.transitLine?.vehicle?.name) || transit.transitLine?.vehicle?.type || "公交";
-      const headsign = transit.headsign ? `往 ${transit.headsign}` : "";
-      const departureStop = transit.stopDetails?.departureStop?.name || "上车站";
-      const arrivalStop = transit.stopDetails?.arrivalStop?.name || "下车站";
-      const departureTime = transit.stopDetails?.departureTime ? new Date(transit.stopDetails.departureTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
-      const arrivalTime = transit.stopDetails?.arrivalTime ? new Date(transit.stopDetails.arrivalTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
-      item.innerHTML = `<b><span>${index + 1}</span>乘坐 ${escapeHtml(String(vehicle))} ${escapeHtml(String(line))}</b><strong>${escapeHtml(headsign || "按线路指示方向")}</strong><p><em>上车</em> ${escapeHtml(departureStop)}　→　<em>下车</em> ${escapeHtml(arrivalStop)}${departureTime || arrivalTime ? ` · ${departureTime || "--:--"}–${arrivalTime || "--:--"}` : ""}</p>`;
-      addRouteStepMarker(step.startLocation, "上", `${line} · ${departureStop} 上车`, "#8d463f");
-      addRouteStepMarker(step.endLocation, "下", `${line} · ${arrivalStop} 下车`, "#3d4542");
-    } else {
-      const modeLabel = { WALK: "步行", DRIVE: "驾车", BICYCLE: "骑行" }[step.travelMode] || "前往";
-      item.innerHTML = `<b><span>${index + 1}</span>${modeLabel}</b><p>${escapeHtml(cleanInstruction(instruction))}</p>`;
-    }
-    routeSteps.append(item);
-  });
-  if (!routeSteps.childElementCount) {
-    const item = document.createElement("li");
-    item.innerHTML = "<b>路线已绘制</b><p>路线服务这次没有返回分段详情；可切换出行方式后重新查询。</p>";
-    routeSteps.append(item);
-  }
-  routeSteps.hidden = true;
-  if (steps.length) {
-    addRouteStepMarker(steps[0].startLocation, "起", `${origin.name} · 起点`, "#8d463f");
-    addRouteStepMarker(steps.at(-1).endLocation, "终", `${destination.name} · 终点`, "#3d4542");
-  }
-};
-
-const summarizeRoute = (route) => {
+const buildRouteStages = (route) => {
   const steps = route.legs?.flatMap((leg) => leg.steps || []) || [];
   const segments = [];
+  if (!steps.length) {
+    const mode = currentRouteContext?.travelMode || "WALK";
+    const label = { WALK: "步行", DRIVE: "驾车", BICYCLE: "骑行", TRANSIT: "公共交通" }[mode] || "前往";
+    return [{ type: mode, label, detail: `${formatRouteDistance(route.distanceMeters || 0)} · ${formatRouteDuration(route.duration || "0s")}`, fallback: true }];
+  }
   steps.forEach((step) => {
     const transit = step.transitDetails;
     if (transit) {
       const line = localizedText(transit.transitLine?.nameShort) || localizedText(transit.transitLine?.name) || "公共交通";
       const vehicle = localizedText(transit.transitLine?.vehicle?.name) || transit.transitLine?.vehicle?.type || "公交";
-      const stopCount = transit.stopCount ? `${transit.stopCount} 站` : "按站点提示";
-      segments.push({ type: "transit", label: `${vehicle} ${line}`, detail: `${stopCount}${step.staticDuration || step.duration ? ` · ${formatRouteDuration(step.staticDuration || step.duration)}` : ""}` });
+      segments.push({
+        type: "transit", label: `${vehicle} ${line}`,
+        detail: `${transit.stopCount ? `${transit.stopCount} 站` : "按站点提示"}${step.staticDuration || step.duration ? ` · ${formatRouteDuration(step.staticDuration || step.duration)}` : ""}`,
+        transit, line, vehicle, startLocation: step.startLocation, endLocation: step.endLocation,
+      });
       return;
     }
     const mode = step.travelMode || "WALK";
@@ -319,16 +325,60 @@ const summarizeRoute = (route) => {
     if (latest?.type === mode) {
       latest.meters += step.distanceMeters || 0;
       latest.seconds += Number.parseInt(step.staticDuration || step.duration || "0", 10) || 0;
+      latest.endLocation = step.endLocation;
     } else {
-      segments.push({ type: mode, meters: step.distanceMeters || 0, seconds: Number.parseInt(step.staticDuration || step.duration || "0", 10) || 0 });
+      segments.push({ type: mode, meters: step.distanceMeters || 0, seconds: Number.parseInt(step.staticDuration || step.duration || "0", 10) || 0, startLocation: step.startLocation, endLocation: step.endLocation });
     }
   });
   return segments.map((segment) => {
     if (segment.type === "transit") return segment;
-    const label = { WALK: "步行", DRIVE: "驾车", BICYCLE: "骑行" }[segment.type] || "前往";
-    return { type: segment.type, label, detail: `${formatRouteDistance(segment.meters)} · ${formatRouteDuration(`${segment.seconds}s`)}` };
+    const label = { WALK: "步行", DRIVE: "驾车", BICYCLE: "骑行", TRANSIT: "公共交通" }[segment.type] || "前往";
+    return { ...segment, label, detail: `${formatRouteDistance(segment.meters)} · ${formatRouteDuration(`${segment.seconds}s`)}` };
   });
 };
+
+const renderRouteSteps = (route, origin, destination) => {
+  if (!routeSteps) return;
+  routeSteps.replaceChildren();
+  const stages = buildRouteStages(route);
+  const items = [];
+  stages.forEach((stage, index) => {
+    const item = document.createElement("li");
+    const previous = stages[index - 1];
+    const next = stages[index + 1];
+    if (stage.type === "transit") {
+      const departureStop = stage.transit.stopDetails?.departureStop?.name || "上车站";
+      const arrivalStop = stage.transit.stopDetails?.arrivalStop?.name || "下车站";
+      const headsign = stage.transit.headsign ? `往 ${stage.transit.headsign}` : "按线路提示方向";
+      const departureTime = stage.transit.stopDetails?.departureTime ? new Date(stage.transit.stopDetails.departureTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
+      const arrivalTime = stage.transit.stopDetails?.arrivalTime ? new Date(stage.transit.stopDetails.arrivalTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
+      item.innerHTML = `<b><span>${index + 1}</span>乘坐 ${escapeHtml(stage.label)}<small>${escapeHtml(stage.detail)}</small></b><strong>${escapeHtml(headsign)}</strong><p><em>上车</em> ${escapeHtml(departureStop)}　→　<em>下车</em> ${escapeHtml(arrivalStop)}${departureTime || arrivalTime ? ` · ${departureTime || "--:--"}–${arrivalTime || "--:--"}` : ""}</p>`;
+      addRouteStepMarker(stage.startLocation, "上", `${stage.line} · ${departureStop} 上车`, "#e2234d");
+      addRouteStepMarker(stage.endLocation, "下", `${stage.line} · ${arrivalStop} 下车`, "#a70f2d");
+      items.push(item);
+      return;
+    }
+    const nextStop = next?.type === "transit" ? next.transit.stopDetails?.departureStop?.name : "";
+    const previousStop = previous?.type === "transit" ? previous.transit.stopDetails?.arrivalStop?.name : "";
+    const destinationLabel = nextStop ? `前往 ${nextStop}` : previousStop ? `从 ${previousStop} 前往目的地` : `前往 ${destination.name}`;
+    item.innerHTML = `<b><span>${index + 1}</span>${escapeHtml(stage.label)}<small>${escapeHtml(stage.detail)}</small></b><p>${escapeHtml(destinationLabel)}${stage.type === "WALK" && /airport|机场/i.test(origin.name) && index === 0 ? "（机场内/周边接驳，请以现场指示为准）" : ""}</p>`;
+    items.push(item);
+  });
+  routeSteps.append(...items);
+  if (!routeSteps.childElementCount) {
+    const item = document.createElement("li");
+    item.innerHTML = "<b>路线已绘制</b><p>路线服务这次没有返回出行节点；可切换出行方式后重新查询。</p>";
+    routeSteps.append(item);
+  }
+  routeSteps.hidden = true;
+  const rawSteps = route.legs?.flatMap((leg) => leg.steps || []) || [];
+  if (rawSteps.length) {
+    addRouteStepMarker(rawSteps[0].startLocation, "起", `${origin.name} · 起点`, "#e2234d");
+    addRouteStepMarker(rawSteps.at(-1).endLocation, "终", `${destination.name} · 终点`, "#a70f2d");
+  }
+};
+
+const summarizeRoute = (route) => buildRouteStages(route).map(({ type, label, detail }) => ({ type, label, detail }));
 
 const routeFareText = (route) => {
   const localized = localizedText(route.localizedValues?.transitFare);
@@ -350,11 +400,12 @@ const renderRouteAlternatives = () => {
   if (!routeAlternatives) return;
   routeAlternatives.replaceChildren();
   currentRouteOptions.forEach((route, index) => {
+    if (routeDetailsOpen && index !== selectedRouteIndex) return;
     const card = document.createElement("button");
     card.type = "button";
     card.className = `route-option${index === selectedRouteIndex ? " is-selected" : ""}`;
     const segments = summarizeRoute(route);
-    const chips = segments.slice(0, 4).map((segment) => `<span>${escapeHtml(segment.label)} · ${escapeHtml(segment.detail)}</span>`).join("");
+    const chips = segments.slice(0, 4).map((segment) => `<span class="route-segment--${escapeHtml(segment.type)}">${escapeHtml(segment.label)} · ${escapeHtml(segment.detail)}</span>`).join("");
     const fare = segments.some((segment) => segment.type === "transit") ? routeFareText(route) : "";
     card.innerHTML = `<b>${index === 0 ? "推荐方案" : `方案 ${index + 1}`}<strong>${formatRouteDuration(route.duration)}</strong></b><p>${formatRouteDistance(route.distanceMeters)}${fare ? ` · ${escapeHtml(fare)}` : ""}</p><div>${chips || "路线详情待提供"}</div>`;
     card.addEventListener("click", () => selectRouteOption(index));
@@ -370,24 +421,50 @@ const drawRouteOptions = () => {
     if (!route.polyline?.encodedPolyline) return;
     const path = window.google.maps.geometry.encoding.decodePath(route.polyline.encodedPolyline);
     const isSelected = index === selectedRouteIndex;
+    const rawSteps = route.legs?.flatMap((leg) => leg.steps || []) || [];
+    const fallbackMode = rawSteps.some((step) => step.transitDetails) ? "TRANSIT" : (currentRouteContext?.travelMode || "WALK");
+    const fallbackStyle = { WALK: "#4285f4", DRIVE: "#1a73e8", BICYCLE: "#f29900", TRANSIT: "#188038" }[fallbackMode] || "#4285f4";
+    const hasSegmentPaths = rawSteps.some((step) => step.polyline?.encodedPolyline);
     const polyline = new window.google.maps.Polyline({
-      path, geodesic: true, map: routeMap, zIndex: isSelected ? 50 : 20,
-      strokeColor: isSelected ? "#8d463f" : "#8f9895", strokeOpacity: isSelected ? .96 : .45, strokeWeight: isSelected ? 6 : 4,
-      icons: isSelected ? [{ icon: { path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 3, strokeColor: "#8d463f" }, offset: "40px", repeat: "115px" }] : [],
+      path, geodesic: true, map: routeMap, zIndex: isSelected ? 30 : 15,
+      strokeColor: isSelected ? (hasSegmentPaths ? "#9aa0a6" : fallbackStyle) : "#d6d9dc", strokeOpacity: isSelected ? (hasSegmentPaths ? .28 : .88) : .16, strokeWeight: isSelected ? (hasSegmentPaths ? 3 : 5) : 2,
     });
-    if (isSelected) currentRouteLine = polyline;
+    if (isSelected) currentRouteLines.push(polyline);
     else routeAlternativeLines.push(polyline);
+
+    if (!isSelected) return;
+    const modeStyle = {
+      WALK: { color: "#4285f4", weight: 4, opacity: .92, dash: true },
+      DRIVE: { color: "#1a73e8", weight: 5, opacity: .9 },
+      BICYCLE: { color: "#f29900", weight: 4, opacity: .92, dash: true },
+      TRANSIT: { color: "#188038", weight: 5, opacity: .92 },
+    };
+    rawSteps.forEach((step) => {
+      const stepPath = step.polyline?.encodedPolyline ? window.google.maps.geometry.encoding.decodePath(step.polyline.encodedPolyline) : [];
+      if (!stepPath.length) return;
+      const mode = step.transitDetails ? "TRANSIT" : (step.travelMode || "WALK");
+      const style = modeStyle[mode] || modeStyle.WALK;
+      const segment = new window.google.maps.Polyline({
+        path: stepPath, geodesic: true, map: routeMap, zIndex: 35,
+        strokeColor: style.color, strokeOpacity: style.opacity, strokeWeight: style.weight,
+        icons: style.dash ? [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 1, strokeColor: style.color, scale: 3 }, offset: "0", repeat: "11px" }] : [],
+      });
+      currentRouteLines.push(segment);
+    });
   });
   if (selectedRoute?.polyline?.encodedPolyline) {
+    const path = window.google.maps.geometry.encoding.decodePath(selectedRoute.polyline.encodedPolyline);
     const bounds = new window.google.maps.LatLngBounds();
-    window.google.maps.geometry.encoding.decodePath(selectedRoute.polyline.encodedPolyline).forEach((point) => bounds.extend(point));
+    path.forEach((point) => bounds.extend(point));
     routeMap.fitBounds(bounds, 48);
+    addRouteMapLabel(path[Math.floor(path.length / 2)], selectedRoute, summarizeRoute(selectedRoute));
   }
 };
 
 const selectRouteOption = (index) => {
   if (!currentRouteOptions[index] || !currentRouteContext) return;
   selectedRouteIndex = index;
+  routeDetailsOpen = false;
   clearRouteStepMarkers();
   drawRouteOptions();
   renderRouteAlternatives();
@@ -439,7 +516,7 @@ const runEmbeddedRoute = async ({ label, origin, destination, travelMode = "WALK
     headers: {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-      "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs.steps,routes.travelAdvisory.transitFare,routes.localizedValues",
+      "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs.steps.distanceMeters,routes.legs.steps.staticDuration,routes.legs.steps.startLocation,routes.legs.steps.endLocation,routes.legs.steps.travelMode,routes.legs.steps.polyline.encodedPolyline,routes.legs.steps.transitDetails,routes.travelAdvisory.transitFare,routes.localizedValues",
     },
     body: JSON.stringify(routeRequest),
   });
@@ -631,14 +708,17 @@ const navigateItineraryRoute = async (routeId) => {
 mapUseLocation?.addEventListener("click", () => requestCurrentLocation().catch((error) => setNavigationStatus(error.message)));
 routeDetailsToggle?.addEventListener("click", () => {
   if (!routeSteps) return;
-  routeSteps.hidden = !routeSteps.hidden;
-  routeDetailsToggle.textContent = routeSteps.hidden ? "查看详细步骤" : "收起详细步骤";
+  routeDetailsOpen = !routeDetailsOpen;
+  routeSteps.hidden = !routeDetailsOpen;
+  renderRouteAlternatives();
+  routeDetailsToggle.textContent = routeDetailsOpen ? "返回全部方案" : "查看详细步骤";
 });
 mapClearRoute?.addEventListener("click", () => {
   clearRouteLines();
   clearRouteStepMarkers();
   currentRouteOptions = [];
   currentRouteContext = undefined;
+  routeDetailsOpen = false;
   if (routeAlternatives) {
     routeAlternatives.hidden = true;
     routeAlternatives.replaceChildren();

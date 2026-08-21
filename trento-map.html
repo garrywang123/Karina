@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#ffeff4" />
     <meta name="description" content="Karina 在特伦托的地图、地点收藏与实时导航。" />
     <title>Trento Map · Karina</title>
-    <link rel="stylesheet" href="./styles.css?v=20260821-navigation17" />
+    <link rel="stylesheet" href="./styles.css?v=20260821-navigation27" />
   </head>
   <body class="trento-page trento-map-page">
     <div class="page-dots" aria-hidden="true"></div>
@@ -41,13 +41,8 @@
         </div>
       </section>
 
-      <section class="trento-map-intro" aria-labelledby="map-page-title">
-        <div><p class="section-tag">TRENTO CITY GUIDE</p><h1 id="map-page-title">特伦托地图</h1></div>
-        <p>直接使用 Google 地图上的真实地点；之后确认宿舍、餐厅或超市时，再按需要加入个人收藏。</p>
-      </section>
-
       <section class="journey-map-wrap" aria-labelledby="map-title">
-        <div class="map-heading"><p class="section-tag" id="map-title">MAP &amp; NAVIGATION</p><div><p>所有地点和路线集中在这里，不再挤在行程日历里。</p><button id="mapFullscreen" class="map-fullscreen" type="button">全屏查看</button></div></div>
+        <div class="map-heading"><div><p class="section-tag" id="map-title">TRENTO MAP</p><h1 class="map-tool-title">特伦托地图</h1></div><div><p>直接使用 Google 地图的真实地点与路线。</p><button id="mapFullscreen" class="map-fullscreen" type="button">全屏查看</button></div></div>
         <form id="mapNavigation" class="map-navigation" aria-label="网页内导航">
           <div class="map-navigation-fields"><div class="route-input-wrap"><input id="routeOrigin" type="text" placeholder="起点（默认我的位置）" autocomplete="off" aria-autocomplete="list" aria-controls="routeOriginSuggestions" /><div id="routeOriginSuggestions" class="place-suggestions" role="listbox" hidden></div></div><button id="routeSwap" type="button" aria-label="互换起点和终点">⇄</button><div class="route-input-wrap"><input id="routeDestination" type="text" placeholder="终点，如餐厅、酒店或地址" autocomplete="off" aria-autocomplete="list" aria-controls="routeDestinationSuggestions" /><div id="routeDestinationSuggestions" class="place-suggestions" role="listbox" hidden></div></div></div>
           <div class="map-navigation-actions"><button id="mapUseLocation" type="button">◎ 使用我的位置</button><select id="routeMode" aria-label="出行方式"><option value="WALK">步行</option><option value="DRIVE">驾车</option><option value="TRANSIT">公交 / 地铁</option><option value="BICYCLE">骑行</option></select><button class="map-route-submit" type="submit">查询路线</button><button id="mapClearRoute" type="button" hidden>清除路线</button></div>
@@ -62,7 +57,7 @@
     </main>
 
     <footer><span>Trento Exchange</span><b>·</b><strong>2026</strong><a href="./trento.html">返回行程日历</a></footer>
-    <script src="./trento.js?v=20260821-navigation17"></script>
+    <script src="./trento.js?v=20260821-navigation27"></script>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFeKxaBmwfhiGCHUHkqSWLMqmuQSr-R1U&libraries=places,geometry&language=zh-CN&region=IT&v=weekly&callback=initGoogleMap"></script>
   </body>
 </html>
