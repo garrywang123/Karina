@@ -62,16 +62,108 @@ const hidePlacePanel = () => {
   if (placeDetailPanel) placeDetailPanel.hidden = true;
 };
 
+const formatPlacePrice = (priceRange, priceLevel) => {
+  const money = (value) => value?.units != null ? `${value.currencyCode || ""} ${value.units}${value.nanos ? `.${String(value.nanos).padStart(9, "0").slice(0, 2)}` : ""}`.trim() : "";
+  const start = money(priceRange?.startPrice);
+  const end = money(priceRange?.endPrice);
+  if (start || end) return `${start || ""}${start && end ? "–" : ""}${end || ""}`;
+  return { PRICE_LEVEL_FREE: "免费", PRICE_LEVEL_INEXPENSIVE: "¥", PRICE_LEVEL_MODERATE: "¥¥", PRICE_LEVEL_EXPENSIVE: "¥¥¥", PRICE_LEVEL_VERY_EXPENSIVE: "¥¥¥¥" }[priceLevel] || "";
+};
+
+const placeTypeLabel = (place) => localizedText(place.primaryTypeDisplayName) || place.category || "Google 地点";
+
+const placeOfferingLabels = (place) => [
+  ["servesBreakfast", "早餐"], ["servesBrunch", "早午餐"], ["servesLunch", "午餐"], ["servesDinner", "晚餐"],
+  ["servesCoffee", "咖啡"], ["servesDessert", "甜点"], ["servesVegetarianFood", "素食"], ["servesWine", "葡萄酒"],
+].filter(([key]) => place[key] === true).map(([, label]) => label);
+
+const placeCuisineLabels = (place) => {
+  const typeLabels = {
+    italian_restaurant: "意大利菜", chinese_restaurant: "中餐", japanese_restaurant: "日料",
+    korean_restaurant: "韩餐", thai_restaurant: "泰餐", indian_restaurant: "印度菜",
+    mexican_restaurant: "墨西哥菜", french_restaurant: "法餐", greek_restaurant: "希腊菜",
+    mediterranean_restaurant: "地中海菜", seafood_restaurant: "海鲜", pizza_restaurant: "披萨",
+    steak_house: "牛排", sushi_restaurant: "寿司", vegan_restaurant: "纯素餐",
+    vegetarian_restaurant: "素食", hamburger_restaurant: "汉堡", barbecue_restaurant: "烧烤",
+    cafe: "咖啡馆", bakery: "烘焙甜点", ice_cream_shop: "冰淇淋",
+  };
+  const types = [place.primaryType, ...(Array.isArray(place.types) ? place.types : [])];
+  return [...new Set(types.map((type) => typeLabels[String(type || "").toLowerCase()]).filter(Boolean))];
+};
+
+const placeFeatureLabels = (place) => [
+  [place.accessibilityOptions?.wheelchairAccessibleEntrance, "无障碍入口"],
+  [place.accessibilityOptions?.wheelchairAccessibleParking, "无障碍停车"],
+  [place.accessibilityOptions?.wheelchairAccessibleRestroom, "无障碍卫生间"],
+  [place.parkingOptions?.freeParkingLot, "免费停车"],
+  [place.parkingOptions?.paidParkingLot, "收费停车"],
+  [place.parkingOptions?.freeStreetParking, "免费路边停车"],
+  [place.paymentOptions?.acceptsCreditCards, "可刷信用卡"],
+  [place.paymentOptions?.acceptsNfc, "支持感应支付"],
+  [place.goodForChildren, "适合儿童"], [place.allowsDogs, "允许携犬"],
+  [place.restroom, "有卫生间"], [place.reservable, "可预约"],
+  [place.outdoorSeating, "户外座位"], [place.liveMusic, "现场音乐"],
+  [place.dineIn, "可堂食"], [place.takeout, "可外带"], [place.delivery, "可配送"],
+].filter(([available]) => available === true).map(([, label]) => label);
+
+const makePlacePanelDraggable = () => {
+  if (!placeDetailPanel || !journeyMapFrame || placeDetailPanel.dataset.dragReady === "true") return;
+  placeDetailPanel.dataset.dragReady = "true";
+  placeDetailPanel.addEventListener("pointerdown", (event) => {
+    if (!journeyMapFrame.classList.contains("is-expanded") || window.matchMedia("(max-width: 760px)").matches) return;
+    if (event.target instanceof Element && event.target.closest("button, a, summary, details, input, select")) return;
+    event.preventDefault();
+    const frameBounds = journeyMapFrame.getBoundingClientRect();
+    const panelBounds = placeDetailPanel.getBoundingClientRect();
+    const offsetX = event.clientX - panelBounds.left;
+    const offsetY = event.clientY - panelBounds.top;
+    const move = (moveEvent) => {
+      const left = Math.min(Math.max(moveEvent.clientX - frameBounds.left - offsetX, 8), Math.max(8, frameBounds.width - panelBounds.width - 8));
+      const top = Math.min(Math.max(moveEvent.clientY - frameBounds.top - offsetY, 8), Math.max(8, frameBounds.height - 88));
+      placeDetailPanel.style.right = "auto";
+      placeDetailPanel.style.bottom = "auto";
+      placeDetailPanel.style.left = `${left}px`;
+      placeDetailPanel.style.top = `${top}px`;
+    };
+    placeDetailPanel.setPointerCapture?.(event.pointerId);
+    placeDetailPanel.addEventListener("pointermove", move);
+    placeDetailPanel.addEventListener("pointerup", () => placeDetailPanel.removeEventListener("pointermove", move), { once: true });
+    placeDetailPanel.addEventListener("pointercancel", () => placeDetailPanel.removeEventListener("pointermove", move), { once: true });
+  });
+};
+
+const isVisitorPlace = (place) => {
+  const type = String(place.primaryType || place.category || "").toLowerCase();
+  return /museum|tourist|art_gallery|zoo|aquarium|amusement|park|church|landmark|historical/.test(type);
+};
+
 const showPlacePanel = (place) => {
   if (!placeDetailPanel) return;
+  // A place card is the active task. Keep the selected route, but collapse its
+  // long step list so the card is never hidden below the navigation controls.
+  if (routeDetailsOpen) {
+    routeDetailsOpen = false;
+    if (routeSteps) routeSteps.hidden = true;
+    renderRouteAlternatives();
+    if (routeDetailsToggle) routeDetailsToggle.textContent = "查看详细步骤";
+  }
   const photo = place.photoName ? `https://places.googleapis.com/v1/${place.photoName}/media?maxWidthPx=720&key=${GOOGLE_MAPS_API_KEY}` : "";
   const photoCredit = place.photoAttributions?.map((item) => item.displayName || item.uri ? `<a href="${escapeHtml(item.uri || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.displayName || "图片来源")}</a>` : "").join("") || "";
   const rating = Number.isFinite(place.rating) ? `★ ${place.rating.toFixed(1)}${place.userRatingCount ? `（${place.userRatingCount} 条评价）` : ""}` : "暂无评分";
-  const price = { PRICE_LEVEL_FREE: "免费", PRICE_LEVEL_INEXPENSIVE: "¥", PRICE_LEVEL_MODERATE: "¥¥", PRICE_LEVEL_EXPENSIVE: "¥¥¥", PRICE_LEVEL_VERY_EXPENSIVE: "¥¥¥¥" }[place.priceLevel] || "";
+  const price = formatPlacePrice(place.priceRange, place.priceLevel);
   const opening = place.currentOpeningHours?.openNow === true ? "营业中" : place.currentOpeningHours?.openNow === false ? "当前未营业" : "营业时间待确认";
   const mapLink = place.googleMapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.lat},${place.lng}`)}`;
-  placeDetailPanel.innerHTML = `<button class="place-detail-close" type="button" aria-label="关闭地点详情">×</button>${photo ? `<img class="place-detail-photo" src="${photo}" alt="${escapeHtml(place.name)} 的地点图片" />` : ""}<div class="place-detail-body"><span>${escapeHtml(place.category || "Google 地点")}</span><h3>${escapeHtml(place.name)}</h3><p class="place-detail-address">${escapeHtml(place.detail || place.formattedAddress || "地址待确认")}</p><div class="place-detail-meta"><b>${rating}</b>${price ? `<i>${price}</i>` : ""}<em>${opening}</em></div><div class="place-detail-actions"><button type="button" data-place-panel-origin>设为起点</button><button type="button" data-place-panel-destination>设为终点</button></div><button class="place-detail-current" type="button" data-place-panel-current>从我的位置出发</button><a href="${mapLink}" target="_blank" rel="noopener noreferrer">在 Google Maps 中打开 ↗</a>${photoCredit ? `<small class="place-photo-credit">图片：${photoCredit}</small>` : ""}</div>`;
+  const offerings = placeOfferingLabels(place);
+  const cuisines = placeCuisineLabels(place);
+  const features = placeFeatureLabels(place);
+  const visitorPlace = isVisitorPlace(place);
+  const summary = localizedText(place.editorialSummary) || localizedText(place.reviewSummary);
+  const phone = place.internationalPhoneNumber || place.nationalPhoneNumber || "";
+  const hours = place.regularOpeningHours?.weekdayDescriptions?.filter(Boolean) || [];
+  const reviews = (place.reviews || []).filter((review) => localizedText(review.text)).slice(0, 2);
+  placeDetailPanel.innerHTML = `<div class="place-detail-drag-handle" data-place-drag-handle title="全屏时可拖动地点卡"><i></i><span>拖动地点卡</span></div><button class="place-detail-close" type="button" aria-label="关闭地点详情">×</button>${photo ? `<img class="place-detail-photo" src="${photo}" alt="${escapeHtml(place.name)} 的地点图片" />` : ""}<div class="place-detail-body"><span>${escapeHtml(placeTypeLabel(place))}</span><h3>${escapeHtml(place.name)}</h3><p class="place-detail-address">${escapeHtml(place.detail || place.formattedAddress || "地址待确认")}</p><div class="place-detail-meta"><b>${rating}</b>${price ? `<i>${visitorPlace ? "费用参考" : "价格参考"} ${escapeHtml(price)}</i>` : ""}<em>${opening}</em></div>${cuisines.length || offerings.length ? `<section class="place-detail-section place-detail-dining">${cuisines.length ? `<p><b>菜系</b>${escapeHtml(cuisines.join(" · "))}</p>` : ""}${offerings.length ? `<div class="place-detail-tags">${offerings.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>` : ""}</section>` : ""}${features.length ? `<section class="place-detail-section"><b>设施与服务</b><div class="place-detail-tags place-detail-tags--features">${features.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></section>` : ""}${summary ? `<p class="place-detail-summary">${escapeHtml(summary)}</p>` : ""}${phone || place.websiteUri ? `<div class="place-detail-contact">${phone ? `<a href="tel:${escapeHtml(phone.replace(/[^+\d]/g, ""))}">电话 ${escapeHtml(phone)}</a>` : ""}${place.websiteUri ? `<a href="${escapeHtml(place.websiteUri)}" target="_blank" rel="noopener noreferrer">${visitorPlace ? "门票 / 预约与官方详情" : "官方网站"} ↗</a>` : ""}</div>` : ""}${hours.length ? `<details class="place-detail-hours"><summary>营业时间</summary>${hours.map((line) => `<span>${escapeHtml(line)}</span>`).join("")}</details>` : ""}${reviews.length ? `<section class="place-detail-reviews" aria-label="Google Maps 评价"><b>Google Maps 评价</b>${reviews.map((review) => `<article><strong>${escapeHtml(review.authorAttribution?.displayName || "Google 用户")}${Number.isFinite(review.rating) ? ` · ★ ${review.rating.toFixed(1)}` : ""}</strong><p>${escapeHtml(localizedText(review.text))}</p></article>`).join("")}</section>` : ""}<div class="place-detail-actions"><button type="button" data-place-panel-origin>设为起点</button><button type="button" data-place-panel-destination>设为终点</button></div><button class="place-detail-current" type="button" data-place-panel-current>从我的位置出发</button><a href="${mapLink}" target="_blank" rel="noopener noreferrer">在 Google Maps 中打开 ↗</a>${photoCredit ? `<small class="place-photo-credit">图片：${photoCredit}</small>` : ""}</div>`;
   placeDetailPanel.hidden = false;
+  makePlacePanelDraggable();
   placeDetailPanel.querySelector(".place-detail-close")?.addEventListener("click", hidePlacePanel);
   placeDetailPanel.querySelector("[data-place-panel-origin]")?.addEventListener("click", () => {
     if (routeOriginInput) routeOriginInput.value = place.name;
@@ -112,7 +204,30 @@ const mergePlaceDetails = (...places) => {
     rating: Number.isFinite(place.rating) ? place.rating : merged.rating,
     userRatingCount: Number.isFinite(place.userRatingCount) ? place.userRatingCount : merged.userRatingCount,
     priceLevel: place.priceLevel || merged.priceLevel,
+    priceRange: place.priceRange || merged.priceRange,
     currentOpeningHours: place.currentOpeningHours || merged.currentOpeningHours,
+    regularOpeningHours: place.regularOpeningHours || merged.regularOpeningHours,
+    primaryTypeDisplayName: place.primaryTypeDisplayName || merged.primaryTypeDisplayName,
+    internationalPhoneNumber: place.internationalPhoneNumber || merged.internationalPhoneNumber,
+    nationalPhoneNumber: place.nationalPhoneNumber || merged.nationalPhoneNumber,
+    websiteUri: place.websiteUri || merged.websiteUri,
+    editorialSummary: place.editorialSummary || merged.editorialSummary,
+    reviewSummary: place.reviewSummary || merged.reviewSummary,
+    reviews: place.reviews || merged.reviews,
+    primaryType: place.primaryType || merged.primaryType,
+    types: place.types || merged.types,
+    accessibilityOptions: place.accessibilityOptions || merged.accessibilityOptions,
+    parkingOptions: place.parkingOptions || merged.parkingOptions,
+    paymentOptions: place.paymentOptions || merged.paymentOptions,
+    goodForChildren: place.goodForChildren ?? merged.goodForChildren,
+    allowsDogs: place.allowsDogs ?? merged.allowsDogs,
+    restroom: place.restroom ?? merged.restroom,
+    reservable: place.reservable ?? merged.reservable,
+    outdoorSeating: place.outdoorSeating ?? merged.outdoorSeating,
+    liveMusic: place.liveMusic ?? merged.liveMusic,
+    dineIn: place.dineIn ?? merged.dineIn,
+    takeout: place.takeout ?? merged.takeout,
+    delivery: place.delivery ?? merged.delivery,
     photoName: place.photoName || merged.photoName,
     photoAttributions: place.photoAttributions || merged.photoAttributions,
     googleMapsUri: place.googleMapsUri || merged.googleMapsUri,
@@ -572,7 +687,7 @@ const findPlaceByText = async (textQuery) => {
 const findPlaceById = async (placeId) => {
   const normalizedId = String(placeId).replace(/^places\//, "");
   const response = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(normalizedId)}?languageCode=zh-CN`, {
-    headers: { "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY, "X-Goog-FieldMask": "displayName,formattedAddress,location,rating,userRatingCount,priceLevel,currentOpeningHours,photos,googleMapsUri" },
+    headers: { "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY, "X-Goog-FieldMask": "displayName,formattedAddress,location,types,primaryType,primaryTypeDisplayName,rating,userRatingCount,priceLevel,priceRange,currentOpeningHours,regularOpeningHours,internationalPhoneNumber,nationalPhoneNumber,websiteUri,editorialSummary,reviewSummary,reviews,servesBreakfast,servesBrunch,servesLunch,servesDinner,servesCoffee,servesDessert,servesVegetarianFood,servesWine,accessibilityOptions,parkingOptions,paymentOptions,goodForChildren,allowsDogs,restroom,reservable,outdoorSeating,liveMusic,dineIn,takeout,delivery,photos,googleMapsUri" },
   });
   if (!response.ok) throw new Error("未能读取地点资料");
   const place = await response.json();
@@ -587,7 +702,38 @@ const findPlaceById = async (placeId) => {
     rating: place.rating,
     userRatingCount: place.userRatingCount,
     priceLevel: place.priceLevel,
+    priceRange: place.priceRange,
     currentOpeningHours: place.currentOpeningHours,
+    regularOpeningHours: place.regularOpeningHours,
+    primaryTypeDisplayName: place.primaryTypeDisplayName,
+    primaryType: place.primaryType,
+    types: place.types,
+    internationalPhoneNumber: place.internationalPhoneNumber,
+    nationalPhoneNumber: place.nationalPhoneNumber,
+    websiteUri: place.websiteUri,
+    editorialSummary: place.editorialSummary,
+    reviewSummary: place.reviewSummary,
+    reviews: place.reviews,
+    servesBreakfast: place.servesBreakfast,
+    servesBrunch: place.servesBrunch,
+    servesLunch: place.servesLunch,
+    servesDinner: place.servesDinner,
+    servesCoffee: place.servesCoffee,
+    servesDessert: place.servesDessert,
+    servesVegetarianFood: place.servesVegetarianFood,
+    servesWine: place.servesWine,
+    accessibilityOptions: place.accessibilityOptions,
+    parkingOptions: place.parkingOptions,
+    paymentOptions: place.paymentOptions,
+    goodForChildren: place.goodForChildren,
+    allowsDogs: place.allowsDogs,
+    restroom: place.restroom,
+    reservable: place.reservable,
+    outdoorSeating: place.outdoorSeating,
+    liveMusic: place.liveMusic,
+    dineIn: place.dineIn,
+    takeout: place.takeout,
+    delivery: place.delivery,
     photoName: place.photos?.[0]?.name,
     photoAttributions: place.photos?.[0]?.authorAttributions,
     googleMapsUri: place.googleMapsUri,
@@ -735,6 +881,12 @@ mapClearRoute?.addEventListener("click", () => {
 if (mapFullscreen && journeyMapFrame) {
   const journeyMapWrap = journeyMapFrame.closest(".journey-map-wrap");
   const setMapExpanded = (isExpanded) => {
+    if (placeDetailPanel) {
+      placeDetailPanel.style.removeProperty("top");
+      placeDetailPanel.style.removeProperty("right");
+      placeDetailPanel.style.removeProperty("bottom");
+      placeDetailPanel.style.removeProperty("left");
+    }
     journeyMapFrame.classList.toggle("is-expanded", isExpanded);
     journeyMapWrap?.classList.toggle("is-map-expanded", isExpanded);
     document.body.classList.toggle("map-expanded", isExpanded);
