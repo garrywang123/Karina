@@ -835,7 +835,7 @@ const navigateItineraryRoute = async (routeId) => {
   const route = itineraryRoutes[routeId];
   if (!route) return;
   if (!journeyMap) {
-    window.location.href = `./trento-map.html?route=${encodeURIComponent(routeId)}`;
+    window.location.href = `./map.html?route=${encodeURIComponent(routeId)}`;
     return;
   }
   try {
