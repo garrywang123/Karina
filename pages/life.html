@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fffafa">
+    <meta name="description" content="Karina 前往意大利特伦托交换的出发前准备清单。">
+    <title>出发前准备 · Karina in Trento</title>
+    <link rel="stylesheet" href="../styles/site.css?v=20260825-life01">
+  </head>
+  <body class="trento-page life-page">
+    <div class="page-dots" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="wordmark" href="../index.html" aria-label="返回 Karina 的首页">Karina · Trento</a>
+      <nav aria-label="特伦托页面导航">
+        <a href="../index.html">Home</a>
+        <a href="./trento.html#journey">Journey</a>
+        <a href="./map.html">Map</a>
+        <a class="is-current" href="./life.html" aria-current="page">Life</a>
+        <a href="./game.html">Game</a>
+      </nav>
+      <span class="status"><i></i> EXCHANGE 2026</span>
+    </header>
+
+    <main class="life-shell">
+      <section class="life-hero" aria-labelledby="life-title">
+        <div>
+          <p class="section-tag">PRE-DEPARTURE LIST</p>
+          <h1 id="life-title">出发前准备</h1>
+          <p>上海出发，去特伦托交换半年，也为周末出发探索欧洲留好余量。勾选状态只保存在当前设备。</p>
+        </div>
+        <aside class="life-progress-card" aria-label="准备进度">
+          <span>PACKING PROGRESS</span>
+          <strong><b id="lifeDoneCount">0</b> / <b id="lifeTotalCount">0</b></strong>
+          <i><em id="lifeProgressBar"></em></i>
+          <button id="resetLifeList" type="button">重置勾选</button>
+        </aside>
+      </section>
+
+      <section class="life-alert" aria-label="抵达后优先事项">
+        <b>抵达后优先办</b>
+        <p>非欧盟交换生通常需在抵达意大利后 <strong>8 个工作日内</strong>办理居留许可申请。护照、签证、住房、保险和学校材料请准备复印件；实际清单以 UniTrento 与邮局当日要求为准，原件不要寄出。</p>
+      </section>
+
+      <section class="life-controls" aria-label="清单筛选">
+        <div class="life-filter-group" role="group" aria-label="按位置筛选">
+          <button class="is-active" data-life-filter="all" type="button">全部</button>
+          <button data-life-filter="carry" type="button">随身优先</button>
+          <button data-life-filter="checked" type="button">托运行李</button>
+          <button data-life-filter="arrival" type="button">到达后办</button>
+        </div>
+        <p id="lifeFilterStatus" aria-live="polite">建议先完成证件、资金、通信和药品。</p>
+      </section>
+
+      <section class="life-grid" aria-label="出发前物品与事项清单">
+        <article class="life-category" data-category="carry">
+          <header><span>01</span><div><p>随身必带</p><h2>证件、入境与资金</h2></div></header>
+          <p class="life-category-note">任何会影响登机、入境或居留的材料都不要托运；纸质与加密电子备份各留一份。</p>
+          <ul class="life-checklist">
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="passport" checked><span>护照、有效签证与护照夹</span><small>护照夹已备</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="visa-copies"><span>护照首页、签证页、机酒与火车订单复印件</span><small>纸质 3–5 份 + 加密云端</small></label></li>
+            <li data-scope="carry arrival"><label><input type="checkbox" data-life-item="permit-file"><span>居留资料（Permesso 申请文件）</span><small>录取/交换证明、住房、保险、资金材料复印件</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="school-file"><span>UniTrento 录取/交换文件、Learning Agreement 与紧急联系人</span><small>也存离线 PDF</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="photos-eu"><span>35×45mm 申根证件照</span><small>建议 8–12 张；一寸/两寸照按国内事项少量备用</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="wallet" checked><span>钱包、两张不同银行/网络的卡与少量欧元现金</span><small>钱包已备；出行前确认境外支付与紧急冻结方式</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="insurance"><span>保险保单、紧急救援电话与医疗信息</span><small>保单须覆盖意大利及申根旅行</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="document-bag"><span>文件袋、防水资料夹与行李牌</span><small>把纸质材料分成随身/入住两份</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="carry">
+          <header><span>02</span><div><p>随身必带</p><h2>数码、通信与电源</h2></div></header>
+          <ul class="life-checklist">
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="cables"><span>数据线、电脑/手机充电器与备用短线</span><small>至少一根 C to C</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="sim-pin"><span>卡针</span><small>换当地 SIM 或重置手机卡时备用</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="adapter"><span>欧标转换头</span><small>意大利常见 C / F / L 型插座</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="powerbank"><span>充电宝</span><small>务必随身登机，容量与航空公司规则相符</small></label></li>
+            <li data-scope="carry checked"><label><input type="checkbox" data-life-item="powerstrip"><span>插排</span><small>确认 220–240V 可用，带过载保护更安心</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="laptop"><span>电脑、电脑支架、鼠标与充电器</span><small>电脑内留离线证件与行程备份</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="offline"><span>下载离线地图、航司/铁路 App、翻译与银行 App</span><small>开通首日流量或准备 eSIM</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="carry checked">
+          <header><span>03</span><div><p>健康优先</p><h2>药品与基础护理</h2></div></header>
+          <p class="life-category-note">药品尽量保留原包装和说明书；受管制药物、针剂或大剂量药物先向航空公司和意大利官方渠道确认。</p>
+          <ul class="life-checklist">
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="medicine"><span>退烧止痛、感冒、肠胃/止泻、晕车药</span><small>分装时保留药名与用法</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="anti-inflammatory"><span>消炎药、红霉素</span><small>按医生建议携带，避免无标签散装药</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="eczema"><span>湿疹/皮肤护理药膏与高保湿身体乳</span><small>先带适应期用量；天气干冷时及时补涂</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="first-aid"><span>创可贴、碘伏棉签、体温计、口罩</span><small>小型急救包即可</small></label></li>
+            <li data-scope="carry checked"><label><input type="checkbox" data-life-item="care"><span>防晒、驱蚊与常用卫生用品</span><small>先带抵达后 2–3 周用量</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="sleep"><span>安睡裤与经期护理用品</span><small>旅途中放一份小包装</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="checked">
+          <header><span>04</span><div><p>特伦托气候</p><h2>衣物、鞋履与住宿</h2></div></header>
+          <p class="life-category-note">特伦托早晚温差和雨雪季更明显，优先分层、耐走、防水；宿舍床品尺寸先确认，别把行李额留给可在当地买的大件。</p>
+          <ul class="life-checklist">
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="layers"><span>保暖分层：抓绒/针织、轻羽绒或保暖外套、保暖内搭</span><small>比单件厚毛衣更适合旅行</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="rain"><span>防水带帽外套、折叠伞与雨鞋套</span><small>周末出行也实用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="shoes"><span>耐走运动鞋、防水/保暖鞋与一双轻便鞋</span><small>提前磨合，避免新鞋磨脚</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="underwear"><span>内衣内裤、袜子、睡衣与拖鞋</span><small>分装一套进随身包</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="sunwear"><span>墨镜、鸭舌帽、防晒衣与轻薄围巾</span><small>欧洲城市暴晒、山间风大和拍照时都实用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="women-travel"><span>泳衣/罩衫、轻便裙装或上镜衣物</span><small>海边、温泉和周末城市旅行可直接使用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="winter-accessories"><span>针织帽、手套与保暖围巾</span><small>秋冬、去多洛米蒂或周边山地时需要</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="skates"><span>花样滑冰鞋、鞋套与刀套</span><small>装入托运行李，提前确认总行李额度并做好防撞保护</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="bedding"><span>四件套</span><small>先确认宿舍床尺寸；建议先带枕套/床单做首晚备用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="towels"><span>浴巾、一次性毛巾、洗脸巾</span><small>先带过渡量，当地补货</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="laundry"><span>脏衣袋、折叠衣架、少量洗衣凝珠/旅行洗衣皂</span><small>住宿不确定时很有用</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="checked">
+          <header><span>05</span><div><p>洗护与妆容</p><h2>日常补给</h2></div></header>
+          <ul class="life-checklist">
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="hair"><span>梳子、吹风机、直板夹</span><small>中国电器通常可用，注意转换头和行李重量</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="oral"><span>牙刷、牙膏、牙线</span><small>液体遵守手提行李规则</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="makeup"><span>化妆包、卸妆油、化妆刷、双眼皮贴</span><small>液体密封装袋，贵重彩妆随身</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="skincare"><span>护肤品、洗护旅行装与防漏分装袋</span><small>带够适应期，不必一次囤半年量</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="chopsticks"><span>便携筷子与小餐具</span><small>旅行和宿舍临时吃饭方便</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="checked arrival">
+          <header><span>06</span><div><p>宿舍日常</p><h2>生活与收纳</h2></div></header>
+          <p class="life-category-note">重的、易买的物品不用从上海背半年份；先带够入住和适应期，剩余到特伦托按宿舍配置补齐。</p>
+          <ul class="life-checklist">
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="bottle"><span>水瓶/保温杯、随行咖啡杯</span><small>上课和周末徒步都能用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="daily-storage"><span>收纳袋、洗漱包、脏衣袋和折叠购物袋</span><small>宿舍空间有限时尤其有用</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="laundry-kit"><span>洗衣网、便携晾衣绳、衣物去污笔/粘毛器</span><small>其余洗衣用品到当地买</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="kitchen-kit"><span>密封保鲜盒和少量厨房收纳</span><small>锅具、电器先确认宿舍是否提供</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="shoe-care"><span>防磨脚贴、鞋垫与衣物夹</span><small>暴走旅行和换季时很有用</small></label></li>
+            <li data-scope="arrival"><label><input type="checkbox" data-life-item="dorm-check"><span>确认宿舍床品尺寸、洗衣设施、厨房配置和禁用电器</span><small>再决定是否当地购买台灯、烧水壶等</small></label></li>
+          </ul>
+        </article>
+
+        <article class="life-category" data-category="carry checked">
+          <header><span>07</span><div><p>周末欧洲旅行</p><h2>摄影与轻量旅行</h2></div></header>
+          <ul class="life-checklist">
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="travel-bag"><span>小型防盗斜挎包、20–30L 日用背包与折叠购物袋</span><small>护照、银行卡与手机贴身放</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="packing"><span>旅行收纳袋、可识别行李带和小锁</span><small>廉航/火车旅行更省心</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="flight-comfort"><span>U 型枕、眼罩、耳塞/降噪耳机与水杯</span><small>首段长途航班和夜车使用</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="notebook"><span>本子、笔与紧急联系人小卡</span><small>手机没电时也能找到信息</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="zv-camera"><span>Sony ZV‑E 系列 Vlog 相机、充电器和备用电池</span><small>电池必须随身登机，先确认机身型号与充电线</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="mirrorless"><span>微单机身、镜头、镜头盖与相机包</span><small>镜头优先放随身包，避免托运撞击</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="instax"><span>拍立得、相纸、备用电池与保护套</span><small>相纸避高温；过安检时可询问人工检查</small></label></li>
+            <li data-scope="carry"><label><input type="checkbox" data-life-item="camera-storage"><span>存储卡、读卡器、移动硬盘与数据线</span><small>旅行照片至少保留两份备份</small></label></li>
+            <li data-scope="checked"><label><input type="checkbox" data-life-item="camera-care"><span>镜头布、清洁气吹、相机雨罩和小型三脚架</span><small>博物馆/景点先确认三脚架规则</small></label></li>
+            <li data-scope="arrival"><label><input type="checkbox" data-life-item="local-apps"><span>到达后配置当地 SIM、交通购票和铁路 App</span><small>保留银行卡、护照和住址用于实名验证</small></label></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="life-arrival" aria-labelledby="arrival-title">
+        <div><p class="section-tag">FIRST WEEK IN ITALY</p><h2 id="arrival-title">落地后一周</h2></div>
+        <ol>
+          <li><b>01</b><span>核对住宿地址、房东/宿舍联系人与入住交接材料。</span></li>
+          <li><b>02</b><span>办理居留许可申请，按 UniTrento 的最新说明准备材料和预约。</span></li>
+          <li><b>03</b><span>配置意大利手机号、Codice Fiscale（如学校/银行/住房需要）和本地支付方式。</span></li>
+          <li><b>04</b><span>保存学校、领馆、保险救援和紧急电话；熟悉去火车站、超市和药房的路线。</span></li>
+        </ol>
+      </section>
+    </main>
+    <footer><span>Karina in Trento</span><b>·</b><strong>Life</strong><a href="../index.html">返回首页</a></footer>
+    <script src="../scripts/life.js?v=20260825-life01"></script>
+  </body>
+</html>
